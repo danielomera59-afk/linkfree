@@ -43,4 +43,6 @@
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true
   }
+  ,
+  "exclude": ["node_modules", "prisma.config.ts"]
 }
