@@ -21,3 +21,14 @@ export async function crearLink(titulo: string, url: string): Promise<LinkItem> 
 export async function borrarLink(id: string): Promise<void> {
   await api.delete(`/links/${id}`);
 }
+export interface PaginaPublica {
+  nombre: string;
+  usuario: string;
+  bio: string | null;
+  links: LinkItem[];
+}
+
+export async function obtenerPaginaPublica(usuario: string): Promise<PaginaPublica> {
+  const respuesta = await api.get(`/links/publico/${usuario}`);
+  return respuesta.data;
+}
