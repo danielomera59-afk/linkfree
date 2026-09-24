@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import linksRoutes from './routes/links.routes';
+import encuestasRoutes from './routes/encuestas.routes';
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.get('/health', (req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/links', linksRoutes);
+app.use('/encuestas', encuestasRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);

@@ -63,7 +63,10 @@ router.get('/publico/:usuario', async (req, res) => {
   try {
     const creador = await prisma.creador.findUnique({
       where: { usuario: req.params.usuario },
-      include: { links: { where: { activo: true }, orderBy: { orden: 'asc' } } },
+      include: {
+        links: { where: { activo: true }, orderBy: { orden: 'asc' } },
+        encuestas: { where: { activa: true }, include: { opciones: true } },
+      },
     });
 
     if (!creador) {
@@ -75,6 +78,7 @@ router.get('/publico/:usuario', async (req, res) => {
       usuario: creador.usuario,
       bio: creador.bio,
       links: creador.links,
+      encuestas: creador.encuestas,
     });
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener la página' });

@@ -17,6 +17,7 @@ model Creador {
   createdAt    DateTime @default(now())
 
   links        Link[]
+  encuestas    Encuesta[]
 }
 
 model Link {
@@ -29,4 +30,24 @@ model Link {
 
   creador    Creador  @relation(fields: [creadorId], references: [id])
   creadorId  String
+}
+model Encuesta {
+  id         String            @id @default(uuid())
+  pregunta   String
+  activa     Boolean           @default(true)
+  createdAt  DateTime          @default(now())
+
+  creador    Creador           @relation(fields: [creadorId], references: [id])
+  creadorId  String
+
+  opciones   OpcionEncuesta[]
+}
+
+model OpcionEncuesta {
+  id          String   @id @default(uuid()) 
+  texto       String
+  votos       Int      @default(0)
+  encuestaId  String
+  encuesta    Encuesta @relation(fields: [encuestaId], references: [id])
+
 }
