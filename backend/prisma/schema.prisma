@@ -18,6 +18,7 @@ model Creador {
 
   links        Link[]
   encuestas    Encuesta[]
+  sorteos      Sorteo[]
 }
 
 model Link {
@@ -50,4 +51,27 @@ model OpcionEncuesta {
   encuestaId  String
   encuesta    Encuesta @relation(fields: [encuestaId], references: [id])
 
+}
+model Sorteo {
+  id               String          @id @default(uuid())
+  titulo           String
+  premio           String
+  limiteGanadores  Int
+  contador         Int             @default(0)
+  activo           Boolean         @default(true)
+  createdAt        DateTime        @default(now())
+
+  creador          Creador         @relation(fields: [creadorId], references: [id])
+  creadorId        String
+
+  ganadores        SorteoGanador[]
+}
+
+model SorteoGanador {
+  id          String   @id @default(uuid())
+  codigo      String
+  createdAt   DateTime @default(now())
+
+  sorteo      Sorteo   @relation(fields: [sorteoId], references: [id])
+  sorteoId    String
 }

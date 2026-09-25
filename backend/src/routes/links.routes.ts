@@ -66,6 +66,7 @@ router.get('/publico/:usuario', async (req, res) => {
       include: {
         links: { where: { activo: true }, orderBy: { orden: 'asc' } },
         encuestas: { where: { activa: true }, include: { opciones: true } },
+        sorteos: { where: { activo: true } },
       },
     });
 
@@ -79,6 +80,7 @@ router.get('/publico/:usuario', async (req, res) => {
       bio: creador.bio,
       links: creador.links,
       encuestas: creador.encuestas,
+      sorteos: creador.sorteos,
     });
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener la página' });
