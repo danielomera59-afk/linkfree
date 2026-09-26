@@ -20,6 +20,7 @@ model Creador {
   encuestas    Encuesta[]
   sorteos      Sorteo[]
   ruletas      Ruleta[]
+  referidos    Referido[]
  
 }
 
@@ -96,4 +97,15 @@ model Segmento {
 
   ruleta    Ruleta  @relation(fields: [ruletaId], references: [id])
   ruletaId  String
+}
+model Referido {
+  id          String   @id @default(uuid())
+  nombre      String
+  enlace      String
+  mensaje     String?
+  destacado   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  creador     Creador  @relation(fields: [creadorId], references: [id])
+  creadorId   String
 }

@@ -68,6 +68,7 @@ router.get('/publico/:usuario', async (req, res) => {
         encuestas: { where: { activa: true }, include: { opciones: true } },
         sorteos: { where: { activo: true } },
         ruletas: { where: { activa: true }, include: { segmentos: true } },
+        referidos: { where: { destacado: true }, orderBy: { createdAt: 'desc' } },
       },
     });
 
@@ -83,6 +84,7 @@ router.get('/publico/:usuario', async (req, res) => {
       encuestas: creador.encuestas,
       sorteos: creador.sorteos,
       ruletas: creador.ruletas,
+      referidos: creador.referidos,
     });
   } catch (error) {
     res.status(500).json({ error: 'Error al obtener la página' });
