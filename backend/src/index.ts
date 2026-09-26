@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.routes';
 import linksRoutes from './routes/links.routes';
 import encuestasRoutes from './routes/encuestas.routes';
 import sorteosRoutes from './routes/sorteos.routes';
+import ruletasRoutes from './routes/ruletas.routes';
 
 dotenv.config();
 console.log('DATABASE_URL cargada:', process.env.DATABASE_URL ? 'SÍ' : 'NO');
@@ -22,6 +23,7 @@ app.use('/auth', authRoutes);
 app.use('/links', linksRoutes);
 app.use('/encuestas', encuestasRoutes);
 app.use('/sorteos', sorteosRoutes);
+app.use('/ruletas', ruletasRoutes);
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
