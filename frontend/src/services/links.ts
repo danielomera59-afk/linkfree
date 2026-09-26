@@ -43,6 +43,21 @@ export interface PaginaPublica {
     limiteGanadores: number;
     contador: number;
   }[];
+  ruletas: {
+    id: string;
+    titulo: string;
+    segmentos: {
+      id: string;
+      texto: string;
+      peso: number;
+    }[];
+  }[];
+  referidos: {
+    id: string;
+    nombre: string;
+    enlace: string;
+    mensaje: string | null;
+  }[];
 }
 
 export async function obtenerPaginaPublica(usuario: string): Promise<PaginaPublica> {

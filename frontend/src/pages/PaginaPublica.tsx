@@ -4,6 +4,8 @@ import { obtenerPaginaPublica } from '../services/links';
 import type { PaginaPublica as PaginaPublicaType } from '../services/links';
 import { votar } from '../services/encuestas';
 import { participarEnSorteo } from '../services/sorteos';
+import { girarRuleta } from '../services/ruletas';
+import { enviarReferido } from '../services/referidos';
 
 function PaginaPublica() {
   const { usuario } = useParams();
@@ -11,7 +13,12 @@ function PaginaPublica() {
   const [noEncontrado, setNoEncontrado] = useState(false);
   const [yaVoto, setYaVoto] = useState<string[]>([]);
   const [participado, setParticipado] = useState<Record<string, string>>({});
-
+  const [girando, setGirando] = useState<Record<string, boolean>>({});
+  const [resultadoRuleta, setResultadoRuleta] = useState<Record<string, string>>({});
+  const [nombreReferido, setNombreReferido] = useState('');
+  const [enlaceReferido, setEnlaceReferido] = useState('');
+  const [mensajeReferido, setMensajeReferido] = useState('');
+  const [referidoEnviado, setReferidoEnviado] = useState(false);
   useEffect(() => {
     if (!usuario) return;
 
@@ -64,7 +71,31 @@ function PaginaPublica() {
     };
   });
 }
+async function handleGirar(ruletaId: string) {
+  if (girando[ruletaId]) return;
 
+  setGirando((prev) => ({ ...prev, [ruletaId]: true }));
+  setResultadoRuleta((prev) => ({ ...prev, [ruletaId]: '' }));
+
+  const resultado = await girarRuleta(ruletaId);
+
+  // Simulamos el giro con un pequeño retraso, para que se sienta
+  // como que la ruleta "gira" antes de mostrar el resultado
+  setTimeout(() => {
+    setGirando((prev) => ({ ...prev, [ruletaId]: false }));
+    setResultadoRuleta((prev) => ({ ...prev, [ruletaId]: resultado.resultado }));
+  }, 1500);
+}
+async function handleEnviarReferido(e: React.FormEvent) {
+  e.preventDefault();
+  if (!usuario) return;
+
+  await enviarReferido(usuario, nombreReferido, enlaceReferido, mensajeReferido);
+  setReferidoEnviado(true);
+  setNombreReferido('');
+  setEnlaceReferido('');
+  setMensajeReferido('');
+}
   if (noEncontrado) return <p>No encontramos a este creador.</p>;
   if (!pagina) return <p>Cargando...</p>;
 
@@ -135,6 +166,73 @@ function PaginaPublica() {
     )}
   </div>
 ))}
+<h2>Ruletas</h2>
+{pagina.ruletas.map((ruleta) => (
+  <div key={ruleta.id} style={{ margin: '15px 0' }}>
+    <p>
+      <strong>{ruleta.titulo}</strong>
+    </p>
+    <div
+      style={{
+        border: '2px solid black',
+        borderRadius: '50%',
+        width: '120px',
+        height: '120px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        margin: '10px 0',
+        transition: 'transform 1.5s ease-out',
+        transform: girando[ruleta.id] ? 'rotate(1440deg)' : 'rotate(0deg)',
+      }}
+    >
+      🎡
+    </div>
+    <button onClick={() => handleGirar(ruleta.id)} disabled={girando[ruleta.id]}>
+      {girando[ruleta.id] ? 'Girando...' : 'Girar'}
+    </button>
+    {resultadoRuleta[ruleta.id] && (
+      <p>
+        <strong>Resultado: {resultadoRuleta[ruleta.id]}</strong>
+      </p>
+    )}
+  </div>
+))}
+<h2>Comunidad</h2>
+{pagina.referidos.map((referido) => (
+  <div key={referido.id} style={{ margin: '10px 0' }}>
+    <a href={referido.enlace} target="_blank" rel="noopener noreferrer">
+      {referido.nombre}
+    </a>
+    {referido.mensaje && <p>"{referido.mensaje}"</p>}
+  </div>
+))}
+
+<h3>¿Quieres aparecer aquí?</h3>
+{referidoEnviado ? (
+  <p>¡Gracias! Tu perfil fue enviado y está esperando aprobación.</p>
+) : (
+  <form onSubmit={handleEnviarReferido}>
+    <input
+      placeholder="Tu nombre"
+      value={nombreReferido}
+      onChange={(e) => setNombreReferido(e.target.value)}
+      required
+    />
+    <input
+      placeholder="Tu link (ej. https://instagram.com/tu-usuario)"
+      value={enlaceReferido}
+      onChange={(e) => setEnlaceReferido(e.target.value)}
+      required
+    />
+    <input
+      placeholder="Mensaje (opcional)"
+      value={mensajeReferido}
+      onChange={(e) => setMensajeReferido(e.target.value)}
+    />
+    <button type="submit">Enviar mi perfil</button>
+  </form>
+)}
     </div>
   );
 }
