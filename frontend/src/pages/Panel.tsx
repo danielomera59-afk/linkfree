@@ -151,162 +151,254 @@ async function handleBorrarReferido(id: string) {
 }
   if (cargando) return <p>Cargando...</p>;
 
-  return (
-    <div>
-      <h1>Mi Panel</h1>
-      <p>
-        Tu página pública: <strong>/{usuario}</strong>
-      </p>
-      <button onClick={handleLogout}>Cerrar sesión</button>
+  if (cargando) return <p style={{ padding: '2rem' }}>Cargando...</p>;
 
-      <h2>Agregar link</h2>
-      <form onSubmit={handleCrear}>
+return (
+  <div style={{ maxWidth: '640px', margin: '0 auto', padding: '2rem 1.5rem' }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div>
+        <h1 style={{ marginBottom: '0.2rem' }}>Mi Panel</h1>
+        <p style={{ color: '#6B7280' }}>
+          Tu página pública: <strong style={{ color: 'var(--color-primary)' }}>/{usuario}</strong>
+        </p>
+      </div>
+      <button
+        onClick={handleLogout}
+        style={{ background: 'transparent', color: 'var(--color-ink)', border: '1.5px solid var(--color-border)' }}
+      >
+        Cerrar sesión
+      </button>
+    </div>
+
+    <Seccion titulo="Links">
+      <form onSubmit={handleCrear} style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
         <input
           placeholder="Título (ej. Mi Instagram)"
           value={titulo}
           onChange={(e) => setTitulo(e.target.value)}
           required
+          style={{ flex: '1 1 160px' }}
         />
         <input
-          placeholder="URL (ej. https://instagram.com/tu-usuario)"
+          placeholder="URL"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           required
+          style={{ flex: '1 1 160px' }}
         />
-        {error && <p style={{ color: 'red' }}>{error}</p>}
         <button type="submit">Agregar</button>
       </form>
+      {error && <p style={{ color: '#DC2626', fontSize: '0.9rem' }}>{error}</p>}
 
-      <h2>Mis links</h2>
-      {links.length === 0 && <p>Todavía no tienes links.</p>}
-      <ul>
+      {links.length === 0 && <VacioAviso texto="Todavía no tienes links." />}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '1rem' }}>
         {links.map((link) => (
-          <li key={link.id}>
-            {link.titulo} — {link.url}{' '}
-            <button onClick={() => handleBorrar(link.id)}>Borrar</button>
-          </li>
+          <Tarjeta key={link.id}>
+            <div>
+              <strong>{link.titulo}</strong>
+              <p style={{ fontSize: '0.85rem', color: '#6B7280' }}>{link.url}</p>
+            </div>
+            <BotonBorrar onClick={() => handleBorrar(link.id)} />
+          </Tarjeta>
         ))}
-      </ul>
-      <h2>Encuestas</h2>
-<form onSubmit={handleCrearEncuesta}>
-  <input
-    placeholder="Pregunta (ej. ¿Qué video subo primero?)"
-    value={pregunta}
-    onChange={(e) => setPregunta(e.target.value)}
-    required
-  />
-  <input
-    placeholder="Opciones separadas por coma (ej. Tutorial, Vlog, Q&A)"
-    value={opcionesTexto}
-    onChange={(e) => setOpcionesTexto(e.target.value)}
-    required
-  />
-  <button type="submit">Crear encuesta</button>
-</form>
+      </div>
+    </Seccion>
 
-{encuestas.length === 0 && <p>Todavía no tienes encuestas.</p>}
-<ul>
-  {encuestas.map((encuesta) => (
-    <li key={encuesta.id}>
-      <strong>{encuesta.pregunta}</strong>
-      <ul>
-        {encuesta.opciones.map((opcion) => (
-          <li key={opcion.id}>
-            {opcion.texto} — {opcion.votos} votos
-          </li>
+    <Seccion titulo="Encuestas">
+      <form onSubmit={handleCrearEncuesta} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+        <input
+          placeholder="Pregunta"
+          value={pregunta}
+          onChange={(e) => setPregunta(e.target.value)}
+          required
+        />
+        <input
+          placeholder="Opciones separadas por coma"
+          value={opcionesTexto}
+          onChange={(e) => setOpcionesTexto(e.target.value)}
+          required
+        />
+        <button type="submit" style={{ alignSelf: 'flex-start' }}>Crear encuesta</button>
+      </form>
+
+      {encuestas.length === 0 && <VacioAviso texto="Todavía no tienes encuestas." />}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '1rem' }}>
+        {encuestas.map((encuesta) => (
+          <Tarjeta key={encuesta.id} columna>
+            <strong>{encuesta.pregunta}</strong>
+            {encuesta.opciones.map((opcion) => (
+              <p key={opcion.id} style={{ fontSize: '0.85rem', color: '#6B7280' }}>
+                {opcion.texto} — {opcion.votos} votos
+              </p>
+            ))}
+            <BotonBorrar onClick={() => handleBorrarEncuesta(encuesta.id)} texto="Borrar encuesta" />
+          </Tarjeta>
         ))}
-      </ul>
-      <button onClick={() => handleBorrarEncuesta(encuesta.id)}>Borrar encuesta</button>
-    </li>
-  ))}
-</ul>
-<h2>Sorteos</h2>
-<form onSubmit={handleCrearSorteo}>
-  <input
-    placeholder="Título (ej. Sorteo de lanzamiento)"
-    value={tituloSorteo}
-    onChange={(e) => setTituloSorteo(e.target.value)}
-    required
-  />
-  <input
-    placeholder="Premio (ej. Código de 10% de descuento)"
-    value={premio}
-    onChange={(e) => setPremio(e.target.value)}
-    required
-  />
-  <input
-    type="number"
-    min="1"
-    placeholder="Límite de ganadores"
-    value={limiteGanadores}
-    onChange={(e) => setLimiteGanadores(Number(e.target.value))}
-    required
-  />
-  <button type="submit">Crear sorteo</button>
-</form>
+      </div>
+    </Seccion>
 
-{sorteos.length === 0 && <p>Todavía no tienes sorteos.</p>}
-<ul>
-  {sorteos.map((sorteo) => (
-    <li key={sorteo.id}>
-      <strong>{sorteo.titulo}</strong> — {sorteo.premio}
-      <br />
-      {sorteo.contador} / {sorteo.limiteGanadores} ganadores
-      <br />
-      <button onClick={() => handleBorrarSorteo(sorteo.id)}>Borrar sorteo</button>
-    </li>
-  ))}
-</ul>
-<h2>Ruletas</h2>
-<form onSubmit={handleCrearRuleta}>
-  <input
-    placeholder="Título (ej. Ruleta de premios)"
-    value={tituloRuleta}
-    onChange={(e) => setTituloRuleta(e.target.value)}
-    required
-  />
-  <input
-    placeholder="Segmentos: Premio grande:1, 10% descuento:3, Sigue participando:6"
-    value={segmentosTexto}
-    onChange={(e) => setSegmentosTexto(e.target.value)}
-    required
-  />
-  <button type="submit">Crear ruleta</button>
-</form>
+    <Seccion titulo="Sorteos">
+      <form onSubmit={handleCrearSorteo} style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
+        <input
+          placeholder="Título"
+          value={tituloSorteo}
+          onChange={(e) => setTituloSorteo(e.target.value)}
+          required
+          style={{ flex: '1 1 140px' }}
+        />
+        <input
+          placeholder="Premio"
+          value={premio}
+          onChange={(e) => setPremio(e.target.value)}
+          required
+          style={{ flex: '1 1 140px' }}
+        />
+        <input
+          type="number"
+          min="1"
+          placeholder="Límite"
+          value={limiteGanadores}
+          onChange={(e) => setLimiteGanadores(Number(e.target.value))}
+          required
+          style={{ flex: '0 1 100px' }}
+        />
+        <button type="submit">Crear sorteo</button>
+      </form>
 
-{ruletas.length === 0 && <p>Todavía no tienes ruletas.</p>}
-<ul>
-  {ruletas.map((ruleta) => (
-    <li key={ruleta.id}>
-      <strong>{ruleta.titulo}</strong>
-      <ul>
-        {ruleta.segmentos.map((s) => (
-          <li key={s.id}>
-            {s.texto} (peso: {s.peso})
-          </li>
+      {sorteos.length === 0 && <VacioAviso texto="Todavía no tienes sorteos." />}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '1rem' }}>
+        {sorteos.map((sorteo) => (
+          <Tarjeta key={sorteo.id} columna>
+            <strong>{sorteo.titulo}</strong>
+            <p style={{ fontSize: '0.85rem', color: '#6B7280' }}>{sorteo.premio}</p>
+            <BarraProgreso actual={sorteo.contador} total={sorteo.limiteGanadores} />
+            <BotonBorrar onClick={() => handleBorrarSorteo(sorteo.id)} texto="Borrar sorteo" />
+          </Tarjeta>
         ))}
-      </ul>
-      <button onClick={() => handleBorrarRuleta(ruleta.id)}>Borrar ruleta</button>
-    </li>
-  ))}
-</ul>
-<h2>Referidos</h2>
-{referidos.length === 0 && <p>Todavía no has recibido perfiles.</p>}
-<ul>
-  {referidos.map((referido) => (
-    <li key={referido.id}>
-      <strong>{referido.nombre}</strong> — {referido.enlace}
-      {referido.mensaje && <p>"{referido.mensaje}"</p>}
-      <p>Estado: {referido.destacado ? 'Destacado ✅' : 'Pendiente'}</p>
-      <button onClick={() => handleDestacar(referido.id)}>
-        {referido.destacado ? 'Quitar destacado' : 'Destacar'}
-      </button>{' '}
-      <button onClick={() => handleBorrarReferido(referido.id)}>Borrar</button>
-    </li>
-  ))}
-</ul>
+      </div>
+    </Seccion>
+
+    <Seccion titulo="Ruletas">
+      <form onSubmit={handleCrearRuleta} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+        <input
+          placeholder="Título"
+          value={tituloRuleta}
+          onChange={(e) => setTituloRuleta(e.target.value)}
+          required
+        />
+        <input
+          placeholder="Segmentos: Texto:peso, Texto:peso"
+          value={segmentosTexto}
+          onChange={(e) => setSegmentosTexto(e.target.value)}
+          required
+        />
+        <button type="submit" style={{ alignSelf: 'flex-start' }}>Crear ruleta</button>
+      </form>
+
+      {ruletas.length === 0 && <VacioAviso texto="Todavía no tienes ruletas." />}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginTop: '1rem' }}>
+        {ruletas.map((ruleta) => (
+          <Tarjeta key={ruleta.id} columna>
+            <strong>{ruleta.titulo}</strong>
+            <p style={{ fontSize: '0.85rem', color: '#6B7280' }}>
+              {ruleta.segmentos.map((s) => `${s.texto} (${s.peso})`).join(' · ')}
+            </p>
+            <BotonBorrar onClick={() => handleBorrarRuleta(ruleta.id)} texto="Borrar ruleta" />
+          </Tarjeta>
+        ))}
+      </div>
+    </Seccion>
+
+    <Seccion titulo="Referidos">
+      {referidos.length === 0 && <VacioAviso texto="Todavía no has recibido perfiles." />}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+        {referidos.map((referido) => (
+          <Tarjeta key={referido.id} columna>
+            <strong>{referido.nombre}</strong>
+            <p style={{ fontSize: '0.85rem', color: '#6B7280' }}>{referido.enlace}</p>
+            {referido.mensaje && <p style={{ fontSize: '0.85rem', fontStyle: 'italic' }}>"{referido.mensaje}"</p>}
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.3rem' }}>
+              <button
+                onClick={() => handleDestacar(referido.id)}
+                style={
+                  referido.destacado
+                    ? { background: 'var(--color-accent)', color: 'var(--color-ink)' }
+                    : undefined
+                }
+              >
+                {referido.destacado ? 'Destacado ✅' : 'Destacar'}
+              </button>
+              <BotonBorrar onClick={() => handleBorrarReferido(referido.id)} />
+            </div>
+          </Tarjeta>
+        ))}
+      </div>
+    </Seccion>
+  </div>
+);
+}
+
+export default Panel;
+function Seccion({ titulo, children }: { titulo: string; children: React.ReactNode }) {
+  return (
+    <div style={{ marginTop: '2.5rem' }}>
+      <h2>{titulo}</h2>
+      {children}
     </div>
   );
 }
 
-export default Panel;
+function Tarjeta({ children, columna }: { children: React.ReactNode; columna?: boolean }) {
+  return (
+    <div
+      style={{
+        background: 'var(--color-surface)',
+        border: '1.5px solid var(--color-border)',
+        borderRadius: '12px',
+        padding: '1rem 1.2rem',
+        display: 'flex',
+        flexDirection: columna ? 'column' : 'row',
+        justifyContent: columna ? 'flex-start' : 'space-between',
+        alignItems: columna ? 'flex-start' : 'center',
+        gap: '0.3rem',
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+function BotonBorrar({ onClick, texto = 'Borrar' }: { onClick: () => void; texto?: string }) {
+  return (
+    <button
+      onClick={onClick}
+      style={{ background: 'transparent', color: '#DC2626', border: '1.5px solid #FCA5A5', padding: '0.4rem 0.8rem', fontSize: '0.85rem' }}
+    >
+      {texto}
+    </button>
+  );
+}
+
+function VacioAviso({ texto }: { texto: string }) {
+  return <p style={{ color: '#9CA3AF', fontStyle: 'italic' }}>{texto}</p>;
+}
+
+function BarraProgreso({ actual, total }: { actual: number; total: number }) {
+  const porcentaje = Math.min(100, Math.round((actual / total) * 100));
+  return (
+    <div style={{ width: '100%' }}>
+      <div style={{ background: 'var(--color-border)', borderRadius: '8px', height: '8px', overflow: 'hidden' }}>
+        <div
+          style={{
+            width: `${porcentaje}%`,
+            background: 'var(--color-accent)',
+            height: '100%',
+          }}
+        />
+      </div>
+      <p style={{ fontSize: '0.8rem', color: '#6B7280', margin: '0.2rem 0 0 0' }}>
+        {actual} / {total}
+      </p>
+    </div>
+  );
+}
