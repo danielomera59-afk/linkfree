@@ -34,8 +34,8 @@ jobs:
     steps:
       - name: Disparar despliegue en Render
         run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
-  
-    zap-scan:
+
+  zap-scan:
     name: Escaneo de seguridad OWASP ZAP
     needs: deploy
     runs-on: ubuntu-latest
