@@ -21,7 +21,7 @@ jobs:
 
       - name: Instalar dependencias
         working-directory: backend
-        run: npm ci
+        run: npm install
 
       - name: Correr pruebas con cobertura
         working-directory: backend
@@ -34,3 +34,17 @@ jobs:
     steps:
       - name: Disparar despliegue en Render
         run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+  
+    zap-scan:
+    name: Escaneo de seguridad OWASP ZAP
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Esperar a que Render despierte
+        run: sleep 30
+
+      - name: Escanear con OWASP ZAP
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: 'https://linkfree-backend.onrender.com'
+          cmd_options: '-a'
