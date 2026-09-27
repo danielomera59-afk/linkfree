@@ -13,6 +13,7 @@ model Creador {
   usuario      String   @unique
   email        String   @unique
   passwordHash String
+  rol          Rol      @default(USUARIO)
   bio          String?
   createdAt    DateTime @default(now())
 
@@ -108,4 +109,8 @@ model Referido {
 
   creador     Creador  @relation(fields: [creadorId], references: [id])
   creadorId   String
+}
+enum Rol {
+  ADMIN
+  USUARIO
 }
