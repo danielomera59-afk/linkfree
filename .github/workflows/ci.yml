@@ -29,4 +29,56 @@ jobs:
 
   deploy:
     name: Desplegar a Render
-    needs:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar despliegue en Render
+        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
+  zap-scan:
+    name: Escaneo de seguridad OWASP ZAP
+    needs: deploy
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+    steps:
+      - name: Esperar a que Render despierte
+        run: sleep 30
+
+      - name: Escanear con OWASP ZAP
+        uses: zaproxy/action-baseline@v0.12.0
+        continue-on-error: true
+        with:
+          target: 'https://linkfree-backend.onrender.com'
+          cmd_options: '-a'
+
+  sonarcloud:
+    name: Análisis con SonarCloud
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el código
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Instalar dependencias
+        working-directory: backend
+        run: npm install
+
+      - name: Generar cobertura
+        working-directory: backend
+        run: npm test
+
+      - name: Escanear con SonarCloud
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
