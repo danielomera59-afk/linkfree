@@ -98,7 +98,7 @@ describe('GET /ruletas/mias', () => {
     (prisma.ruleta.findMany as jest.Mock).mockResolvedValue([{ id: 'ruleta-1' }]);
 
     const respuesta = await request(app)
-      .get('/ruletas/mias')
+      .get('/ruletas/mis')
       .set('Authorization', `Bearer ${tokenValido}`);
 
     expect(respuesta.status).toBe(200);
