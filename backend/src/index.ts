@@ -13,7 +13,12 @@ console.log('DATABASE_URL cargada:', process.env.DATABASE_URL ? 'SÍ' : 'NO');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
+const origenesPermitidos = [
+  'http://localhost:5173',
+  process.env.FRONTEND_URL,
+].filter((origin): origin is string => Boolean(origin));
+
+app.use(cors({ origin: origenesPermitidos }));
 app.use(express.json());
 
 app.get('/health', (req, res) => {
