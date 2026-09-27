@@ -39,6 +39,9 @@ jobs:
     name: Escaneo de seguridad OWASP ZAP
     needs: deploy
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
     steps:
       - name: Esperar a que Render despierte
         run: sleep 30
