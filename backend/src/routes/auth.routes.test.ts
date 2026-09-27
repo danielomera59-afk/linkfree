@@ -72,3 +72,48 @@ describe('POST /auth/login', () => {
     expect(respuesta.body.creador.usuario).toBe('test');
   });
 });
+describe('POST /auth/registro', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('rechaza con 400 si faltan campos', async () => {
+    const respuesta = await request(app)
+      .post('/auth/registro')
+      .send({ nombre: 'Pedro' });
+
+    expect(respuesta.status).toBe(400);
+  });
+
+  it('rechaza con 409 si el usuario o email ya existen', async () => {
+    (prisma.creador.findFirst as jest.Mock).mockResolvedValue({ id: 'existente' });
+
+    const respuesta = await request(app).post('/auth/registro').send({
+      nombre: 'Pedro',
+      usuario: 'pedro',
+      email: 'pedro@correo.com',
+      password: '123456',
+    });
+
+    expect(respuesta.status).toBe(409);
+  });
+
+  it('crea el creador si los datos son válidos', async () => {
+    (prisma.creador.findFirst as jest.Mock).mockResolvedValue(null);
+    (prisma.creador.create as jest.Mock).mockResolvedValue({
+      id: 'nuevo-1',
+      nombre: 'Pedro',
+      usuario: 'pedro',
+    });
+
+    const respuesta = await request(app).post('/auth/registro').send({
+      nombre: 'Pedro',
+      usuario: 'pedro',
+      email: 'pedro@correo.com',
+      password: '123456',
+    });
+
+    expect(respuesta.status).toBe(201);
+    expect(respuesta.body.usuario).toBe('pedro');
+  });
+});
