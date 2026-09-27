@@ -1,12 +1,9 @@
 import { Router } from 'express';
 import { prisma } from '../prisma';
 import { verificarToken, AuthRequest } from '../middleware/auth.middleware';
-
+import { generarCodigo } from '../utils/codigo';
 const router = Router();
 
-function generarCodigo(): string {
-  return Math.random().toString(36).substring(2, 10).toUpperCase();
-}
 
 // Crear un sorteo (requiere estar logueado)
 router.post('/', verificarToken, async (req: AuthRequest, res) => {

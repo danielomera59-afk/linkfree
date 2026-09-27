@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { prisma } from '../prisma';
 import { verificarToken, AuthRequest } from '../middleware/auth.middleware';
-
+import { elegirSegmentoPonderado } from '../utils/ruleta';
 const router = Router();
 
 // Crear una ruleta con sus segmentos (requiere estar logueado)
@@ -62,19 +62,9 @@ router.post('/:id/girar', async (req, res) => {
       return res.status(404).json({ error: 'Ruleta no encontrada o sin segmentos' });
     }
 
-    const pesoTotal = ruleta.segmentos.reduce((suma, s) => suma + s.peso, 0);
-    let numeroAleatorio = Math.random() * pesoTotal;
+    const ganador = elegirSegmentoPonderado(ruleta.segmentos);
+    res.json({ resultado: ganador.texto, segmentoId: ganador.id });
 
-    let ganador = ruleta.segmentos[0];
-    for (const segmento of ruleta.segmentos) {
-      if (numeroAleatorio < segmento.peso) {
-        ganador = segmento;
-        break;
-      }
-      numeroAleatorio -= segmento.peso;
-    }
-
-    res.json({ resultado: ganador!.texto, segmentoId: ganador!.id });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Error al girar la ruleta' });
