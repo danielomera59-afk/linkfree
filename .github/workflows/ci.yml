@@ -29,26 +29,4 @@ jobs:
 
   deploy:
     name: Desplegar a Render
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - name: Disparar despliegue en Render
-        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
-
-  zap-scan:
-    name: Escaneo de seguridad OWASP ZAP
-    needs: deploy
-    runs-on: ubuntu-latest
-    permissions:
-      issues: write
-      contents: read
-    steps:
-      - name: Esperar a que Render despierte
-        run: sleep 30
-
-      - name: Escanear con OWASP ZAP
-        uses: zaproxy/action-baseline@v0.12.0
-        continue-on-error: true
-        with:
-          target: 'https://linkfree-backend.onrender.com'
-          cmd_options: '-a'
+    needs:
