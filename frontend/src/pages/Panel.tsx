@@ -30,7 +30,7 @@ function Panel() {
   const [tituloRuleta, setTituloRuleta] = useState('');
   const [segmentosTexto, setSegmentosTexto] = useState('');
   const [referidos, setReferidos] = useState<Referido[]>([]);
-  const [copiado, setCopiado] = useState(false);
+  
 
   useEffect(() => {
     cargarLinks();
@@ -149,12 +149,6 @@ async function handleDestacar(id: string) {
 async function handleBorrarReferido(id: string) {
   await borrarReferido(id);
   setReferidos(referidos.filter((r) => r.id !== id));
-}
-function handleCopiarLink() {
-  const url = `${window.location.origin}/${usuario}`;
-  navigator.clipboard.writeText(url);
-  setCopiado(true);
-  setTimeout(() => setCopiado(false), 2000);
 }
   if (cargando) return <p>Cargando...</p>;
 
