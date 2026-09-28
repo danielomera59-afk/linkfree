@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { prisma } from './prisma';
 import authRoutes from './routes/auth.routes';
 import linksRoutes from './routes/links.routes';
 import encuestasRoutes from './routes/encuestas.routes';
@@ -22,8 +23,16 @@ const origenesPermitidos = [
 app.use(cors({ origin: origenesPermitidos }));
 app.use(express.json());
 
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok', message: 'LinkFree backend funcionando' });
+// Endpoint de Healthcheck optimizado para despertar/mantener activa la base de datos en Neon
+app.get('/health', async (req, res) => {
+  try {
+    // Consulta SQL directa a la base de datos
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: 'ok', message: 'Backend y base de datos Neon activos' });
+  } catch (error) {
+    console.error('Error al hacer ping a la base de datos:', error);
+    res.status(500).json({ status: 'error', message: 'Fallo al conectar con la base de datos' });
+  }
 });
 
 app.use('/auth', authRoutes);
