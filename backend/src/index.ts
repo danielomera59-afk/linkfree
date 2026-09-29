@@ -18,7 +18,6 @@ const PORT = process.env.PORT || 3000;
 const origenesPermitidos = [
   'http://localhost:5173',
   process.env.FRONTEND_URL,
-  'https://linkfree-qz34ws4n5-danielomera59-2201s-projects.vercel.app',
 ].filter((origin): origin is string => Boolean(origin));
 
 app.use(cors({ origin: origenesPermitidos }));
