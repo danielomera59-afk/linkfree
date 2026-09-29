@@ -33,7 +33,7 @@ function Panel() {
   const [copiado, setCopiado] = useState(false);
 
   useEffect(() => {
-    cargarLinks();
+    void cargarLinks();
   }, []);
 
   async function cargarLinks() {
@@ -158,7 +158,7 @@ function Panel() {
 
   function handleCopiarLink() {
     const url = `${window.location.origin}/${usuario}`;
-    navigator.clipboard.writeText(url);
+    void navigator.clipboard.writeText(url);
     setCopiado(true);
     setTimeout(() => setCopiado(false), 2000);
   }
