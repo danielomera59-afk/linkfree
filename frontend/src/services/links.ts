@@ -1,5 +1,5 @@
 import api from './api';
-
+import { validarId, validarUsuario } from './validar';
 export interface LinkItem {
   id: string;
   titulo: string;
@@ -19,8 +19,9 @@ export async function crearLink(titulo: string, url: string): Promise<LinkItem> 
 }
 
 export async function borrarLink(id: string): Promise<void> {
-  await api.delete(`/links/${encodeURIComponent(id)}`);
+  await api.delete(`/links/${validarId(id)}`);
 }
+
 
 export interface PaginaPublica {
   nombre: string;
@@ -61,6 +62,6 @@ export interface PaginaPublica {
 }
 
 export async function obtenerPaginaPublica(usuario: string): Promise<PaginaPublica> {
-  const respuesta = await api.get(`/links/publico/${encodeURIComponent(usuario)}`);
+  const respuesta = await api.get(`/links/publico/${validarUsuario(usuario)}`);
   return respuesta.data;
 }

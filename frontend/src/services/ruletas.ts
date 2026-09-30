@@ -1,4 +1,5 @@
 import api from './api';
+import { validarId } from './validar';
 
 export interface Segmento {
   id: string;
@@ -32,10 +33,10 @@ export async function crearRuleta(
 }
 
 export async function borrarRuleta(id: string): Promise<void> {
-  await api.delete(`/ruletas/${encodeURIComponent(id)}`);
+  await api.delete(`/ruletas/${validarId(id)}`);
 }
 
 export async function girarRuleta(id: string): Promise<ResultadoGiro> {
-  const respuesta = await api.post(`/ruletas/${encodeURIComponent(id)}/girar`);
+  const respuesta = await api.post(`/ruletas/${validarId(id)}/girar`);
   return respuesta.data;
 }

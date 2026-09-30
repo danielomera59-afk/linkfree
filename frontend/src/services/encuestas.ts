@@ -1,5 +1,5 @@
 import api from './api';
-
+import { validarId } from './validar';
 export interface OpcionEncuesta {
   id: string;
   texto: string;
@@ -24,10 +24,10 @@ export async function crearEncuesta(pregunta: string, opciones: string[]): Promi
 }
 
 export async function borrarEncuesta(id: string): Promise<void> {
-  await api.delete(`/encuestas/${encodeURIComponent(id)}`);
+  await api.delete(`/encuestas/${validarId(id)}`);
 }
 
 export async function votar(encuestaId: string, opcionId: string): Promise<OpcionEncuesta> {
-  const respuesta = await api.post(`/encuestas/${encodeURIComponent(encuestaId)}/votar`, { opcionId });
+  const respuesta = await api.post(`/encuestas/${validarId(encuestaId)}/votar`, { opcionId });
   return respuesta.data;
 }

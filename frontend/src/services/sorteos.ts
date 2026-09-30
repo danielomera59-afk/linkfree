@@ -1,4 +1,5 @@
 import api from './api';
+import { validarId } from './validar';
 
 export interface Ganador {
   id: string;
@@ -36,10 +37,9 @@ export async function crearSorteo(
 }
 
 export async function borrarSorteo(id: string): Promise<void> {
-  await api.delete(`/sorteos/${encodeURIComponent(id)}`);
+  await api.delete(`/sorteos/${validarId(id)}`);
 }
-
 export async function participarEnSorteo(id: string): Promise<ResultadoParticipar> {
-  const respuesta = await api.post(`/sorteos/${encodeURIComponent(id)}/participar`);
+  const respuesta = await api.post(`/sorteos/${validarId(id)}/participar`);
   return respuesta.data;
 }
