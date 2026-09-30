@@ -34,7 +34,7 @@ router.post('/registro', async (req, res) => {
       usuario: nuevoCreador.usuario,
     });
   } catch (error) {
-    console.error(error);
+    console.error('Error en /registro:', error);
     res.status(500).json({ error: 'Error al registrar el creador' });
   }
 });
@@ -43,6 +43,10 @@ router.post('/registro', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email y contraseña requeridos' });
+    }
 
     const creador = await prisma.creador.findUnique({ where: { email } });
 
@@ -56,18 +60,23 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
+    if (!process.env.JWT_SECRET) {
+      console.error('ERROR: JWT_SECRET no está definida en las variables de entorno.');
+      return res.status(500).json({ error: 'Error de configuración en el servidor' });
+    }
+
     const token = jwt.sign(
       { id: creador.id, usuario: creador.usuario, rol: creador.rol },
-      process.env.JWT_SECRET as string,
+      process.env.JWT_SECRET,
       { expiresIn: '7d' }
-);
+    );
 
-res.json({
-  token,
-  creador: { id: creador.id, nombre: creador.nombre, usuario: creador.usuario, rol: creador.rol },
-});
+    res.json({
+      token,
+      creador: { id: creador.id, nombre: creador.nombre, usuario: creador.usuario, rol: creador.rol },
+    });
   } catch (error) {
-    console.error(error);
+    console.error('Error en /login:', error);
     res.status(500).json({ error: 'Error al iniciar sesión' });
   }
 });
