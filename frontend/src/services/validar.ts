@@ -14,3 +14,14 @@ export function validarUsuario(usuario: string): string {
   }
   return usuario;
 }
+export function validarUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+      throw new Error();
+    }
+    return url;
+  } catch {
+    throw new Error('URL inválida: debe empezar con http:// o https://');
+  }
+}

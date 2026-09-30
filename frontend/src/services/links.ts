@@ -1,5 +1,6 @@
 import api from './api';
-import { validarId, validarUsuario } from './validar';
+import { validarId, validarUsuario, validarUrl } from './validar';
+
 export interface LinkItem {
   id: string;
   titulo: string;
@@ -14,7 +15,7 @@ export async function obtenerMisLinks(): Promise<LinkItem[]> {
 }
 
 export async function crearLink(titulo: string, url: string): Promise<LinkItem> {
-  const respuesta = await api.post('/links', { titulo, url });
+  const respuesta = await api.post('/links', { titulo, url: validarUrl(url) });
   return respuesta.data;
 }
 
