@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/auth';
-
+import { validarUsuario } from '../services/validar';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,11 +14,12 @@ function Login() {
 
     try {
       const data = await login({ email, password });
-      if (typeof data.token !== 'string' || typeof data.creador?.usuario !== 'string') {
-        throw new Error('Respuesta inesperada del servidor');
+      if (typeof data.token !== 'string' || !/^[\w-]+\.[\w-]+\.[\w-]+$/.test(data.token)) {
+        throw new Error('Token con formato inválido');
       }
+      const usuarioValidado = validarUsuario(data.creador.usuario);
       localStorage.setItem('token', data.token);
-      localStorage.setItem('usuario', data.creador.usuario);
+      localStorage.setItem('usuario', usuarioValidado);
       navigate('/panel');
     } catch (err) {
       setError('Email o contraseña incorrectos');
