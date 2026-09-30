@@ -32,10 +32,10 @@ export async function crearRuleta(
 }
 
 export async function borrarRuleta(id: string): Promise<void> {
-  await api.delete(`/ruletas/${id}`);
+  await api.delete(`/ruletas/${encodeURIComponent(id)}`);
 }
 
 export async function girarRuleta(id: string): Promise<ResultadoGiro> {
-  const respuesta = await api.post(`/ruletas/${id}/girar`);
+  const respuesta = await api.post(`/ruletas/${encodeURIComponent(id)}/girar`);
   return respuesta.data;
 }

@@ -19,7 +19,7 @@ export async function crearLink(titulo: string, url: string): Promise<LinkItem> 
 }
 
 export async function borrarLink(id: string): Promise<void> {
-  await api.delete(`/links/${id}`);
+  await api.delete(`/links/${encodeURIComponent(id)}`);
 }
 
 export interface PaginaPublica {
@@ -61,6 +61,6 @@ export interface PaginaPublica {
 }
 
 export async function obtenerPaginaPublica(usuario: string): Promise<PaginaPublica> {
-  const respuesta = await api.get(`/links/publico/${usuario}`);
+  const respuesta = await api.get(`/links/publico/${encodeURIComponent(usuario)}`);
   return respuesta.data;
 }

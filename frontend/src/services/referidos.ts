@@ -14,12 +14,12 @@ export async function obtenerMisReferidos(): Promise<Referido[]> {
 }
 
 export async function destacarReferido(id: string): Promise<Referido> {
-  const respuesta = await api.patch(`/referidos/${id}/destacar`);
+  const respuesta = await api.patch(`/referidos/${encodeURIComponent(id)}/destacar`);
   return respuesta.data;
 }
 
 export async function borrarReferido(id: string): Promise<void> {
-  await api.delete(`/referidos/${id}`);
+  await api.delete(`/referidos/${encodeURIComponent(id)}`);
 }
 
 export async function enviarReferido(
@@ -28,6 +28,6 @@ export async function enviarReferido(
   enlace: string,
   mensaje: string
 ): Promise<Referido> {
-  const respuesta = await api.post(`/referidos/${usuario}`, { nombre, enlace, mensaje });
+  const respuesta = await api.post(`/referidos/${encodeURIComponent(usuario)}`, { nombre, enlace, mensaje });
   return respuesta.data;
 }

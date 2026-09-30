@@ -24,10 +24,10 @@ export async function crearEncuesta(pregunta: string, opciones: string[]): Promi
 }
 
 export async function borrarEncuesta(id: string): Promise<void> {
-  await api.delete(`/encuestas/${id}`);
+  await api.delete(`/encuestas/${encodeURIComponent(id)}`);
 }
 
 export async function votar(encuestaId: string, opcionId: string): Promise<OpcionEncuesta> {
-  const respuesta = await api.post(`/encuestas/${encuestaId}/votar`, { opcionId });
+  const respuesta = await api.post(`/encuestas/${encodeURIComponent(encuestaId)}/votar`, { opcionId });
   return respuesta.data;
 }
