@@ -9,12 +9,15 @@ import sorteosRoutes from './routes/sorteos.routes';
 import ruletasRoutes from './routes/ruletas.routes';
 import referidosRoutes from './routes/referidos.routes';
 import adminRoutes from './routes/admin.routes';
+import helmet from 'helmet';
 
 dotenv.config();
 console.log('DATABASE_URL cargada:', process.env.DATABASE_URL ? 'SÍ' : 'NO');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+app.disable('x-powered-by');
+app.use(helmet());
 
 // Limpiar la URL del frontend para evitar fallos si incluye '/' al final
 const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(/\/$/, '') : null;
@@ -60,6 +63,12 @@ app.get('/health', async (req, res) => {
     res.status(500).json({ status: 'error', message: 'Fallo al conectar con la base de datos' });
   }
 });
+// Evita que las respuestas de la API se guarden en caché
+app.use((_req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('Permissions-Policy', 'geolocation=(), camera=(), microphone=()');
+  next();
+});
 
 app.use('/auth', authRoutes);
 app.use('/links', linksRoutes);
@@ -68,6 +77,7 @@ app.use('/sorteos', sorteosRoutes);
 app.use('/ruletas', ruletasRoutes);
 app.use('/referidos', referidosRoutes); 
 app.use('/admin', adminRoutes);
+app.get('/', (_req, res) => res.json({ name: 'LinkFree API' }));
 
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`);
