@@ -33,26 +33,45 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Disparar despliegue en Render
-        run: curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
+        run: curl -fsS -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
 
   zap-scan:
     name: Escaneo de seguridad OWASP ZAP
     needs: deploy
     runs-on: ubuntu-latest
     permissions:
-      issues: write
       contents: read
+    env:
+      TARGET_URL: https://linkfree-backend.onrender.com/api/health
     steps:
-      - name: Esperar a que Render despierte
-        run: sleep 30
+      - name: Esperar a que Render termine el despliegue
+        run: |
+          for i in $(seq 1 20); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" "$TARGET_URL" || true)
+            echo "Intento $i: HTTP $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 15
+          done
+          echo "El servicio no respondió 200 a tiempo, se escaneará de todos modos."
 
       - name: Escanear con OWASP ZAP
-        uses: zaproxy/action-baseline@v0.12.0
         continue-on-error: true
+        run: |
+          mkdir -p zap-reports
+          chmod 777 zap-reports
+          docker run --rm \
+            -v "$(pwd)/zap-reports:/zap/wrk:rw" \
+            ghcr.io/zaproxy/zaproxy:stable \
+            zap-baseline.py -t "$TARGET_URL" -a \
+            -r report_html.html -w report_md.md -J report_json.json
+
+      - name: Subir reporte ZAP como artefacto
+        uses: actions/upload-artifact@v4
+        if: always()
         with:
-          target: 'https://linkfree-backend.onrender.com'
-          artifact_name: 'zap-scan'
-          cmd_options: '-a'
+          name: zap-scan-report
+          path: zap-reports/
+          if-no-files-found: warn
 
   sonarcloud:
     name: Análisis con SonarCloud
