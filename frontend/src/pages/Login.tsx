@@ -14,6 +14,9 @@ function Login() {
 
     try {
       const data = await login({ email, password });
+      if (typeof data.token !== 'string' || typeof data.creador?.usuario !== 'string') {
+        throw new Error('Respuesta inesperada del servidor');
+      }
       localStorage.setItem('token', data.token);
       localStorage.setItem('usuario', data.creador.usuario);
       navigate('/panel');
