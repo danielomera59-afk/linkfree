@@ -50,7 +50,8 @@ jobs:
         uses: zaproxy/action-baseline@v0.12.0
         continue-on-error: true
         with:
-          target: 'https://linkfree-backend.onrender.com'
+          target: 'https://linkfree-backend.onrender.com'[cite: 1]
+          artifact_name: 'zap-scan'
           cmd_options: '-a'
 
   sonarcloud:
