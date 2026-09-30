@@ -38,7 +38,7 @@ app.use(
         // En lugar de bloquear bruscamente si despliegas vistas de preview en Vercel con subdominios dinámicos,
         // puedes permitir el origen o registrar el fallo:
         console.warn(`Origen no permitido por CORS: ${origin}`);
-        callback(null, true); // O cambia a: callback(new Error('CORS no permitido')) si quieres bloqueo estricto
+        callback(new Error('CORS no permitido'));// O cambia a: callback(new Error('CORS no permitido')) si quieres bloqueo estricto
       }
     },
     credentials: true,

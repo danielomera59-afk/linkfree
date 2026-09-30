@@ -42,7 +42,7 @@ jobs:
     permissions:
       contents: read
     env:
-      TARGET_URL: https://linkfree-backend.onrender.com/api/health
+      TARGET_URL: https://linkfree-backend.onrender.com/health
     steps:
       - name: Esperar a que Render termine el despliegue
         run: |
