@@ -24,9 +24,8 @@ const frontendUrl = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.replace(
 
 const origenesPermitidos = [
   'http://localhost:5173',
-  'http://localhost:3000',
-  frontendUrl,
-].filter((origin): origin is string => Boolean(origin));
+  ...(process.env.FRONTEND_URL?.split(',').map((url) => url.trim()) ?? []),
+].filter(Boolean);
 
 // Configuración completa de CORS
 app.use(
